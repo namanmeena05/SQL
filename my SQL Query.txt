@@ -1,0 +1,326 @@
+
+
+[]
+
+
+CRUD Opration........
+
+create database emp;
+
+Use emp;
+
+Create Table emp (id INT NOT NULL PRIMARY KEY,name VARCHAR(250));
+
+INSERT INTO emp (id, name) VALUES (1, "Shashank");
+
+UPDATE emp SET name = "Vishwakarma" WHERE id = 3;
+
+delete FROM emp WHERE Id = 3;
+
+SELECT * FROM emp;
+
+Drop table emp;
+
+Drop database ssp;
+
+Add Coloumn Query - Alter Table emp Add (Salary Int );
+
+********************************************************************************************************8
+ Highest salary Withlimit 
+
+1st high****** select * from emp order by salary desc limit 0,1; 
+2nd high****** select * from emp order by salary desc limit 1,1; 
+3rd high****** select * from emp order by salary desc limit 2,1; 
+4th high****** select * from emp order by salary desc limit 3,1; 
+5th high****** select * from emp order by salary desc limit 4,1; 
+
+*************************************************************************************************
+ Highest salary With OUT limit 
+
+1ST-high****** select max(salary) From emp	
+2nd high****** select max(salary) From emp WHERE Salary < (SELECT MAX(salary) From emp);
+3rd-high****** select max(salary) from emp where salary <(select max(salary) from emp where salary <(select max(salary) from emp));
+4th-high****** select max(salary) from emp where salary <(select max(salary) from emp where salary <(select max(salary) from emp where salary<(select max(salary) from emp)));
+5th-high****** select max(salary) from emp where salary <(select max(salary) from emp where salary <(select max(salary) from emp where salary<(select max(salary) from emp where salary<(select max(salary) from emp))));
+
+
+**************************************************************************************************
+
+#####Index#####
+
+
+CREATE INDEX idx_last_name
+ON employees (last_name);
+
+
+With the index in place, the database engine can utilize it to quickly locate the rows where the last name is 'Johnson', resulting in faster query execution.
+
+Without the index, the database would have to perform a full table scan, examining each row in the table to find the matching records, which can be slower, especially as the size of the table grows.
+
+***************************************************************************************************
+
+
+Marksheet Query With Limit - 
+
+Select roll_no,name,physics,chemistry,maths,(physics + chemistry + maths) as total from st_marksheet Where physics>=33 And Chemistry>=33 And maths>=33 Order by Total desc Limit 0,10;
+
+
+~.Marksheet Query Without Limit - 
+
+Select roll_no,name,physics,chemistry,maths,(physics + chemistry + maths) as Total From st_marksheet Where physics>=33 and  Chemistry>=33 and maths>=33 Order by Total desc;
+ 
+
+~. by Percentage
+
+Select roll_no,name,physics,chemistry,maths,((physics + chemistry + maths)/3) as Total From st_marksheet Where physics>=33 and Chemistry>=33 and maths>=33 Order by Total desc;
+
+
+
+**************************************************************************************************
+
+Joins ---------it it used to join two tables...........
+
+(1).  Inner Join ---select * from emp inner join department where emp.id=department.dept_id;************************Common data
+
+
+(2). Left Join ---- select * from emp left join department on emp.id=department.dept_id;**************************Left table FUll & Right Commen
+
+
+(3). Right Join----  select * from emp right join department on emp.id=department.dept_id;**********************LEFT COMMEN DATA & RIGHT FULL
+
+
+(4). Full Join / Outer join 
+
+select * from emp e left join department d on(e.id=d.dept_id) 
+union 
+select * from emp e right join department d on(e.id=d.dept_id);
+
+Outer joins are used to retrieve data from two tables. They not only return the matching rows but also include unmatched rows from one or both tables.
+
+
+(5). Full Join AlterNate Query 
+
+(select * from emp e left join department d on(e.id=d.dept_id) where e.id is null)
+union
+ (select * from emp e right join department d on(e.id=d.dept_id) where e.id is null);
+
+left table all data right table all null values and then right table all data left table all null data
+*****************************************************************************************************
+
+Group By
+
+ select count(maths) from st_marksheet group by maths ;
+ select name , count(name) from emp group by name;
+ select count(*) from st_marksheet group by maths ;
+select COUNT(maths),maths from st_marksheet GROUP BY maths HAVING COUNT(maths) > 1
+
+
+******************************************************************************************************
+
+TRIGERSSSSSSSS
+
+After update
+
+
+     create trigger after_update
+     after update on depart
+     for each row
+    update employee set salary = salary+1000 where id =3;
+
+before_update
+
+ create trigger before_update
+     after delete on depart
+     for each row
+     update depart set depart_name = "English" where id ;
+
+after delete
+
+ create trigger after_delete
+    after delete on employee
+    for each row
+    update depart set salary = 6577 where id = 3;
+
+ #after delete**********
+create trigger after_update after update on emp for each row delete f
+rom dept where dept_id=2; 
+
+
+#before update******
+create trigger before_update before update on emp for each row insert into dept(dept_id,dept_name) values(old.id,old.name);
+
+-- Set custom delimiter
+DELIMITER $$
+
+-- Create the trigger
+CREATE TRIGGER after_delete
+AFTER DELETE ON emp
+FOR EACH ROW
+BEGIN
+    DELETE FROM dept WHERE dept_id = 1;
+END$$
+
+-- Revert to default delimiter
+DELIMITER ;
+
+-- Verify the initial state of the tables
+SELECT * FROM emp;
+SELECT * FROM dept;
+
+-- Perform the delete operation
+DELETE FROM emp WHERE id = 1;
+
+-- Check the state of the tables after deletion
+SELECT * FROM emp;
+SELECT * FROM dept;
+
+
+
+
+before delete
+
+
+ create trigger before_delete
+    before delete on employee
+     for each row
+    insert into depart values(4,"social");
+
+
+after insert
+
+ create trigger after_insert
+     after insert on employee
+     for each row
+    delete from depart where id = 4;
+
+
+before_insert
+
+ create trigger before_insert
+    before insert on employee
+    for each row
+    insert into depart values (54, "commerce");
+
+*********************************************************************************************************
+
+last_login 
+
+select last_login from ss where loginid like 'sky123@gmail.com';
+select count(last_login) from ss where loginid like "rp123@gmail.com";
+select * from ss where loginid like 'sky123@gmail.com';
+
+*******sahi wali
+ 
+SELECT user_id, MAX(login_time) AS last_login
+FROM user_logins
+GROUP BY user_id;
+
+
+select * from emp order by last_login limit 0,1;
+
+mysql> select * from user_logins;
++------+-----------------+---------------------+
+| id   | email           | login_time          |
++------+-----------------+---------------------+
+|    1 | naman@gmail.com | 2024-06-04 12:03:00 |
+|    2 | yash@gmail.com  | 2024-06-04 12:08:00 |
+|    3 | yash@gmail.com  | 2024-06-04 12:25:00 |
+|    3 | naman@gmail.com | 2024-06-04 12:55:00 |
++------+-----------------+---------------------+
+4 rows in set (0.00 sec)
+
+mysql> select email , max(login_time) as last_login from user_logins where email ='naman@gmail.com' group by email;
++-----------------+---------------------+
+| email           | last_login          |
++-----------------+---------------------+
+| naman@gmail.com | 2024-06-04 12:55:00 |
++-----------------+---------------------+
+1 row in set (0.03 sec)
+
+mysql>
+
+*******************************************************************************************
+foreign key
+
+create table department(id int,dept_name varchar(50),dept_id int,primary key(id),foreign key(dept_id) references emp(id));
+
+alter table emp add foreign key(dept_id) references emp(id);
+
+
+CREATE TABLE parent_table (
+    id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE child_table (
+    id INT PRIMARY KEY,
+    parent_id INT,
+    name VARCHAR(100),
+    FOREIGN KEY (parent_id) REFERENCES parent_table(id)
+);
+
+
+***********************************************************************************************************************************************************************
+
+
+cascade
+
+create table department(id int,dept_name varchar(50),dept_id int,primary key(id),foreign key(dept_id) references emp(id) on update cascade on delete cascade);
+
+
+*************************************************************************************************************************************************************************
+
+Between
+
+mysql> select * from emp where dept_id between 1 and 5;
++------+------+--------+---------+
+| id   | name | salary | dept_id |
++------+------+--------+---------+
+|    1 | njhg |  10000 |       1 |
+|    3 | llk  |  20000 |       3 |
+|    1 | njhg |    100 |       1 |
++------+------+--------+---------+
+3 rows in set (0.02 sec)
+
+
+
+***************************************************************************************************************************************************************************
+
+IN
+
+mysql> select * from emp where salary in(10000,20000);
++------+------+--------+---------+
+| id   | name | salary | dept_id |
++------+------+--------+---------+
+|    1 | njhg |  10000 |       1 |
+|    3 | llk  |  20000 |       3 |
+|    4 | annu |  20000 |       6 |
++------+------+--------+---------+
+3 rows in set (0.00 sec)
+
+*************************************************************************************************************************************************************************
+
+
+
+SELECT *
+FROM 
+    employee e 
+right JOIN 
+    department d 
+ON 
+    e.dep_id = d.dep_id
+
+UNION
+
+SELECT * 
+FROM 
+    employee e 
+left JOIN 
+    department d 
+ON 
+    e.dep_id = d.dep_id;
+
+
+
+
+
